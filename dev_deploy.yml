@@ -1,5 +1,4 @@
 
-# dev_deploy.yml
 - name: Deploy web server configuration
   hosts: servidores
   become: true
@@ -32,10 +31,12 @@
         mode: '0755'
         recurse: yes
 
-    - name: Copy index.html to host-specific directory
-      ansible.builtin.copy:
-        src: files/index.html
+    - name: Render index.html desde plantilla
+      ansible.builtin.template:
+        src: templates/index.html.j2
         dest: "/var/www/vhosts/{{ inventory_hostname }}/index.html"
+        force: yes
+
 
     - name: Open ports 80 and 443 in firewall
       ansible.posix.firewalld:

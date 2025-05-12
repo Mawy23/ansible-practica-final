@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Despliegue de {{ inventory_hostname }}</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f8f9fa;
+      text-align: center;
+      margin-top: 80px;
+    }
+    h1 {
+      color: #007bff;
+    }
+    p {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>¡Bienvenido a {{ inventory_hostname }}!</h1>
+  <p>Este sitio ha sido desplegado automáticamente usando Ansible.</p>
+  <p>Servidor gestionado: <strong>{{ inventory_hostname }}</strong></p>
+</body>
+</html>
+

@@ -1,0 +1,29 @@
+- name: Create users
+  hosts: servidores
+  become: true
+  vars:
+    packages:
+      - memcached
+      - mariadb-server
+
+  tasks:
+    - name: Create user carlos
+      ansible.builtin.user:
+        name: carlos
+        state: present
+
+    - name: Create user marta
+      ansible.builtin.user:
+        name: marta
+        state: present
+
+    - name: Install memcached and mariadb-server
+      ansible.builtin.package:
+        name: "{{ packages }}"
+        state: present
+
+    - name: Install redis if swap > 20MB
+      ansible.builtin.package:
+        name: redis
+        state: present
+      when: ansible_swaptotal_mb > 20
