@@ -1,0 +1,20 @@
+
+- name: Verify users exist
+  hosts: servidores
+  gather_facts: false
+
+  tasks:
+    - name: Check if carlos exists
+      ansible.builtin.getent:
+        database: passwd
+        key: carlos
+      register: carlos_exists
+      failed_when: false
+
+    - name: Output carlos status
+      ansible.builtin.lineinfile:
+        path: /home/vagrant/verify.txt
+        line: "Carlos was created"
+        create: true
+      when: carlos_exists.ansible_facts.getent_passwd is defined
+

@@ -1,0 +1,20 @@
+
+- name: Test web content
+  hosts: control
+  become: true
+
+  tasks:
+    - name: Retrieve web content and write to error log on failure
+      block:
+        - name: Retrieve web content
+          ansible.builtin.uri:
+            url: http://vagrant1
+            return_content: yes
+          register: content
+
+      rescue:
+        - name: Write to error file
+          ansible.builtin.copy:
+            dest: /home/vagrant/error.log
+            content: "{{ content.content | default('No content retrieved') }}"
+

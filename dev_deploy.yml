@@ -1,0 +1,52 @@
+
+# dev_deploy.yml
+- name: Deploy web server configuration
+  hosts: servidores
+  become: true
+
+  vars:
+    vhost_path: "/etc/httpd/conf.d/vhost.conf"
+
+  tasks:
+    - name: Install httpd
+      ansible.builtin.package:
+        name: httpd
+        state: present
+
+    - name: Ensure httpd is started and enabled
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Deploy vhost config template
+      ansible.builtin.template:
+        src: templates/vhost.conf.j2
+        dest: "{{ vhost_path }}"
+      notify: Restart httpd
+
+    - name: Ensure vhost directory exists
+      ansible.builtin.file:
+        path: "/var/www/vhosts/{{ inventory_hostname }}"
+        state: directory
+        mode: '0755'
+        recurse: yes
+
+    - name: Copy index.html to host-specific directory
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: "/var/www/vhosts/{{ inventory_hostname }}/index.html"
+
+    - name: Open ports 80 and 443 in firewall
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+
+  handlers:
+    - name: Restart httpd
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+
